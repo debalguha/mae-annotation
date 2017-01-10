@@ -24,6 +24,7 @@
 
 package edu.brandeis.cs.nlp.mae.io;
 
+import edu.brandeis.cs.nlp.mae.AbstractDatabaseDrivenTest;
 import edu.brandeis.cs.nlp.mae.MaeStrings;
 import edu.brandeis.cs.nlp.mae.database.LocalSqliteDriverImpl;
 import edu.brandeis.cs.nlp.mae.database.MaeDBException;
@@ -44,8 +45,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by krim on 4/6/16.
  */
-public class AnnotationLoaderTest {
-    private LocalSqliteDriverImpl driver;
+public class AnnotationLoaderTest extends AbstractDatabaseDrivenTest{
     private DTDLoader dtdLoader;
     private AnnotationLoader loader;
 
@@ -57,7 +57,7 @@ public class AnnotationLoaderTest {
 
     @Before
     public void setUp() throws Exception {
-        driver = new LocalSqliteDriverImpl(MaeStrings.TEST_DB_FILE);
+        setupDriver();
         driver.setAnnotationFileName("TEST_SAMPLE");
         dtdLoader = new DTDLoader(driver);
 

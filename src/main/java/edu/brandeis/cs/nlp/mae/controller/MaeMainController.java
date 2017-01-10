@@ -29,6 +29,7 @@ import edu.brandeis.cs.nlp.mae.MaeStrings;
 import edu.brandeis.cs.nlp.mae.database.LocalSqliteDriverImpl;
 import edu.brandeis.cs.nlp.mae.database.MaeDBException;
 import edu.brandeis.cs.nlp.mae.database.MaeDriverI;
+import edu.brandeis.cs.nlp.mae.database.MySQLDriverBuilder;
 import edu.brandeis.cs.nlp.mae.io.MaeIODTDException;
 import edu.brandeis.cs.nlp.mae.io.MaeIOException;
 import edu.brandeis.cs.nlp.mae.model.*;
@@ -92,9 +93,10 @@ public class MaeMainController extends JPanel {
     private ColorHandler documentTabColors;
     private Set<Tag> adjudicatingTags;
     private boolean isAdjudicating;
+    private Properties applicationProperties;
 
-    public MaeMainController() {
-
+    public MaeMainController(Properties applicationProperties) {
+    	this.applicationProperties = applicationProperties;
         drivers = new ArrayList<>();
 
         mode = MODE_NORMAL;
@@ -558,7 +560,7 @@ public class MaeMainController extends JPanel {
         } catch (IOException e) {
             throw new MaeIOException("Could not generate DB file:", e);
         }
-        MaeDriverI driver = new LocalSqliteDriverImpl(dbFile.getAbsolutePath());
+        MaeDriverI driver = Boolean.valueOf(applicationProperties.getProperty("useSqlite"))?new LocalSqliteDriverImpl(dbFile.getAbsolutePath()):MySQLDriverBuilder.buildDriverFromProperties();
         currentDriver = driver;
         drivers.add(currentDriver);
         try {

@@ -24,6 +24,7 @@
 
 package edu.brandeis.cs.nlp.mae.database;
 
+import edu.brandeis.cs.nlp.mae.AbstractDatabaseDrivenTest;
 import edu.brandeis.cs.nlp.mae.MaeStrings;
 import edu.brandeis.cs.nlp.mae.model.TagType;
 import org.junit.Before;
@@ -34,14 +35,13 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by krim on 12/16/15.
  */
-public class IdHandlerTest {
+public class IdHandlerTest extends AbstractDatabaseDrivenTest{
 
-    private static MaeDriverI driver;
     private IdHandler handler;
 
     @Before
     public void setUp() throws Exception {
-        driver = new LocalSqliteDriverImpl(MaeStrings.TEST_DB_FILE);
+        setupDriver();
         handler = new IdHandler();
 
     }

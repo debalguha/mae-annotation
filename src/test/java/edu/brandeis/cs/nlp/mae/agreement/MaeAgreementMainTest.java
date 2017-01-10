@@ -24,6 +24,7 @@
 
 package edu.brandeis.cs.nlp.mae.agreement;
 
+import edu.brandeis.cs.nlp.mae.AbstractDatabaseDrivenTest;
 import edu.brandeis.cs.nlp.mae.MaeStrings;
 import edu.brandeis.cs.nlp.mae.database.LocalSqliteDriverImpl;
 import edu.brandeis.cs.nlp.mae.database.MaeDriverI;
@@ -42,11 +43,11 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by krim on 4/14/2016.
  */
-public class MaeAgreementMainTest {
+public class MaeAgreementMainTest extends AbstractDatabaseDrivenTest{
     private final String SUCCESS = "%!$@#%!$%!";
 
     private MaeAgreementMain calc;
-    private MaeDriverI driver;
+    
 
     @After
     public void tearDown() throws Exception {
@@ -56,7 +57,7 @@ public class MaeAgreementMainTest {
 
     @Before
     public void setUp() throws Exception {
-        driver = new LocalSqliteDriverImpl(MaeStrings.TEST_DB_FILE);
+        setupDriver();
         driver.setAnnotationFileName("TEST_SAMPLE");
         DTDLoader dtdLoader = new DTDLoader(driver);
         URL sampleFileUrl = Thread.currentThread().getContextClassLoader().getResource("iaa_example/iaaSample.dtd");

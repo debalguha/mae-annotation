@@ -30,6 +30,7 @@ import edu.brandeis.cs.nlp.mae.agreement.MaeAgreementMain;
 import edu.brandeis.cs.nlp.mae.database.LocalSqliteDriverImpl;
 import edu.brandeis.cs.nlp.mae.database.MaeDBException;
 import edu.brandeis.cs.nlp.mae.database.MaeDriverI;
+import edu.brandeis.cs.nlp.mae.database.MySQLDriverBuilder;
 import edu.brandeis.cs.nlp.mae.io.MaeIOException;
 import edu.brandeis.cs.nlp.mae.util.MappedSet;
 import org.xml.sax.SAXException;
@@ -45,6 +46,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
 
 import static edu.brandeis.cs.nlp.mae.agreement.MaeAgreementStrings.ALL_METRIC_TYPE_STRINGS;
@@ -67,7 +69,7 @@ public class MaeAgreementGUI extends JFrame {
     private MaeAgreementMain calc;
     private MaeDriverI driver;
 
-    public MaeAgreementGUI(String taskSchemeName) throws FileNotFoundException, MaeIOException, MaeDBException {
+    public MaeAgreementGUI(String taskSchemeName) throws FileNotFoundException, MaeIOException, MaeException {
         super("MAE IAA Calculator");
         this.taskScheme =  new File(taskSchemeName);
         setupDriver();
@@ -80,17 +82,30 @@ public class MaeAgreementGUI extends JFrame {
         this.agrTypeSelectPanels = new LinkedList<>();
         this.initUI();
     }
-
-    void setupDriver() throws MaeIOException, MaeDBException, FileNotFoundException {
-        String dbFilename = String.format("mae-iaa-%d", System.currentTimeMillis());
+    
+    MaeDriverI setupSQLiteDriver() throws MaeException, FileNotFoundException{
+    	String dbFilename = String.format("mae-iaa-%d", System.currentTimeMillis());
         File dbFile;
         try {
             dbFile = File.createTempFile(dbFilename, ".sqlite");
         } catch (IOException e) {
             throw new MaeIOException("Could not generate DB file:", e);
         }
-        driver = new LocalSqliteDriverImpl(dbFile.getAbsolutePath());
-        driver.readTask(taskScheme);
+        return new LocalSqliteDriverImpl(dbFile.getAbsolutePath());
+    }
+
+    void setupDriver() throws MaeException, FileNotFoundException {
+    	Properties applicationProperties = new Properties();
+    	try {
+			applicationProperties.load(MySQLDriverBuilder.class.getClassLoader().getResourceAsStream("application.properties"));
+		} catch (IOException e) {
+			throw new MaeException(e);
+		}
+    	if(Boolean.valueOf(applicationProperties.getProperty("useSqlite")))
+    		driver = setupSQLiteDriver();
+    	else
+    		driver = MySQLDriverBuilder.buildDriverFromProperties();
+    	driver.readTask(taskScheme);
     }
 
     private void initUI() {
@@ -156,7 +171,7 @@ public class MaeAgreementGUI extends JFrame {
                     setupDriver();
                     selectedTask.setText(driver.getTaskName());
                     // TODO: 2016-04-17 18:18:16EDT refresh UI based on new driver
-                } catch (MaeIOException | MaeDBException | FileNotFoundException ex) {
+                } catch (MaeException | FileNotFoundException ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage(), MaeStrings.ERROR_POPUP_TITLE, JOptionPane.WARNING_MESSAGE);
                     ex.printStackTrace();
                 }

@@ -31,6 +31,10 @@ public class MaeException extends Exception {
     public MaeException() {
         super("Mae-Exception: ");
     }
+    
+    public MaeException(Throwable cause) {
+        super(cause);
+    }
 
     public MaeException(String message) {
         super("Mae-Exception: " + message);

@@ -24,6 +24,7 @@
 
 package edu.brandeis.cs.nlp.mae.io;
 
+import edu.brandeis.cs.nlp.mae.AbstractDatabaseDrivenTest;
 import edu.brandeis.cs.nlp.mae.MaeStrings;
 import edu.brandeis.cs.nlp.mae.database.LocalSqliteDriverImpl;
 import edu.brandeis.cs.nlp.mae.model.ArgumentType;
@@ -44,9 +45,8 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by krim on 12/26/2015.
  */
-public class DTDLoaderTest {
+public class DTDLoaderTest extends AbstractDatabaseDrivenTest{
 
-    private LocalSqliteDriverImpl driver;
     private DTDLoader dtdLoader;
 
     @After
@@ -57,7 +57,7 @@ public class DTDLoaderTest {
 
     @Before
     public void setUp() throws Exception {
-        driver = new LocalSqliteDriverImpl(MaeStrings.TEST_DB_FILE);
+        setupDriver();
         dtdLoader = new DTDLoader(driver);
 
     }

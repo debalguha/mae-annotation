@@ -25,16 +25,20 @@
 package edu.brandeis.cs.nlp.mae;
 
 import edu.brandeis.cs.nlp.mae.controller.MaeMainController;
+import edu.brandeis.cs.nlp.mae.database.MySQLDriverBuilder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by krim on 4/8/16.
@@ -42,6 +46,15 @@ import java.util.List;
 public class MaeMain {
 
     private static final Logger logger = LoggerFactory.getLogger(MaeMain.class.getName());
+    private static Properties applicationProperties = new Properties();
+    
+    private static void loadApplicationProperties() throws MaeException{
+    	try {
+    		applicationProperties.load(MySQLDriverBuilder.class.getClassLoader().getResourceAsStream("application.properties"));
+		} catch (IOException e) {
+			throw new MaeException(e);
+		}
+    }
 
     private static void enableOSXQuitStrategy() {
         // for two reasons:
@@ -71,7 +84,7 @@ public class MaeMain {
     private static MaeMainController createAndShowGUI() {
         enableOSXQuitStrategy();
 
-        MaeMainController controller = new MaeMainController();
+        MaeMainController controller = new MaeMainController(applicationProperties);
         JFrame mainFrame = controller.initUI();
         controller.setWindowFrame(mainFrame);
         mainFrame.pack();
@@ -87,6 +100,11 @@ public class MaeMain {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+            	try {
+					loadApplicationProperties();
+				} catch (MaeException e1) {
+					throw new RuntimeException(e1);
+				}
                 MaeMainController controller = createAndShowGUI();
 
                 if (args.length > 0) {
